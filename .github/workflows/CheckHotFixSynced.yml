@@ -24,7 +24,6 @@ jobs:
         id: check_pending_pr
         run: |
           # Fetch the list of open PRs targeting the 'main' branch
-          echo $github.repository
           open_prs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/pulls?state=open&base=hot-fix")
           echo $open_prs
