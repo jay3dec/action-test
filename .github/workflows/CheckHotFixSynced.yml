@@ -25,7 +25,8 @@ jobs:
             const prs = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'open'
+              state: 'open',
+              base: 'hot-fix'
             });
 
             if (prs.data.length === 0) {
@@ -35,12 +36,6 @@ jobs:
               prs.data.forEach(pr => {
                 console.log(`- ${pr.title}: ${pr.html_url}`);
               });
+              exit 1;
             }
-
-            // Optionally, set outputs for use in future steps
-            return prs.data.map(pr => pr.title).join(", ");
         id: pr_list
-
-      - name: Display open PR titles
-        run: |
-          echo "Open PR Titles: ${{ steps.pr_list.outputs.result }}"
