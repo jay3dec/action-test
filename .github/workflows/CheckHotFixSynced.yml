@@ -34,3 +34,5 @@ jobs:
           #  echo "No other pending PRs. Merge is allowed."
           #fi
 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
