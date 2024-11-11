@@ -23,7 +23,7 @@ jobs:
         run: |
           # Fetch the list of open PRs targeting the 'main' branch
           open_prs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?state=open&base=hot-fix")
+            "https://api.github.com/repos/action-test/pulls?state=open&base=hot-fix")
           echo $open_prs
           # If there are any other pending PRs, fail the check
           #if [[ "$pr_count" -gt 0 ]]; then
