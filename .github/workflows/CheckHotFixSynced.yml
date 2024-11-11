@@ -32,10 +32,9 @@ jobs:
             if (prs.data.length === 0) {
               console.log('No open PRs found.');
             } else {
-              console.log(`Found ${prs.data.length} open PR(s):`);
+              core.setFailed(`Found ${prs.data.length} open PR(s):`);
               prs.data.forEach(pr => {
                 console.log(`- ${pr.title}: ${pr.html_url}`);
               });
-              exit 1;
             }
         id: pr_list
