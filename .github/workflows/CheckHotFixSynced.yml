@@ -12,28 +12,35 @@ on:
 permissions:
   contents: read
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  fetch-prs:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Check for open PRs targeting the Hot fix branch
-        id: check_pending_pr
-        run: |
-          # Fetch the list of open PRs targeting the 'main' branch
-          open_prs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?state=open&base=hot-fix")
-          echo $open_prs
-          # If there are any other pending PRs, fail the check
-          #if [[ "$pr_count" -gt 0 ]]; then
-          #  echo "There are other open PRs targeting the 'main' branch. Please merge or close them first."
-          #  exit 1  # Fail the job to block the merge
-          #else
-          #  echo "No other pending PRs. Merge is allowed."
-          #fi
+      - name: Fetch open PRs using GitHub Script
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            if (prs.data.length === 0) {
+              console.log('No open PRs found.');
+            } else {
+              console.log(`Found ${prs.data.length} open PR(s):`);
+              prs.data.forEach(pr => {
+                console.log(`- ${pr.title}: ${pr.html_url}`);
+              });
+            }
+
+            // Optionally, set outputs for use in future steps
+            return prs.data.map(pr => pr.title).join(", ");
+        id: pr_list
+
+      - name: Display open PR titles
+        run: |
+          echo "Open PR Titles: ${{ steps.pr_list.outputs.result }}"
